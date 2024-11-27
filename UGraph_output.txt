@@ -1,0 +1,126 @@
+UGraphDemo1
+==================================================
+Vertices:
+V(HCM, in: 3, out: 3)
+V(LongAn, in: 1, out: 1)
+V(BinhDuong, in: 1, out: 1)
+V(DongNai, in: 2, out: 2)
+V(BinhThuan, in: 1, out: 1)
+------------------------------
+Edges:
+E(HCM,LongAn,0)
+E(HCM,BinhDuong,0)
+E(HCM,DongNai,0)
+E(LongAn,HCM,0)
+E(BinhDuong,HCM,0)
+E(DongNai,HCM,0)
+E(DongNai,BinhThuan,0)
+E(BinhThuan,DongNai,0)
+==================================================
+
+UGraphDemo2
+==================================================
+Vertices:
+V(A, in: 2, out: 2)
+V(B, in: 3, out: 3)
+V(C, in: 4, out: 4)
+V(D, in: 4, out: 4)
+V(E, in: 3, out: 3)
+V(F, in: 2, out: 2)
+------------------------------
+Edges:
+E(A,B,6)
+E(A,C,3)
+E(B,A,6)
+E(B,C,2)
+E(B,D,5)
+E(C,A,3)
+E(C,B,2)
+E(C,D,3)
+E(C,E,4)
+E(D,B,5)
+E(D,C,3)
+E(D,E,2)
+E(D,F,3)
+E(E,C,4)
+E(E,D,2)
+E(E,F,5)
+E(F,D,3)
+E(F,E,5)
+==================================================
+
+==================================================
+Vertices:
+V(A, in: 1, out: 1)
+V(B, in: 2, out: 2)
+V(C, in: 0, out: 0)
+V(D, in: 3, out: 3)
+V(E, in: 2, out: 2)
+V(F, in: 2, out: 2)
+------------------------------
+Edges:
+E(A,B,6)
+E(B,A,6)
+E(B,D,5)
+E(D,B,5)
+E(D,E,2)
+E(D,F,3)
+E(E,D,2)
+E(E,F,5)
+E(F,D,3)
+E(F,E,5)
+==================================================
+
+UGraphDemo3
+==================================================
+Vertices:
+V(A, in: 2, out: 2)
+V(B, in: 3, out: 3)
+V(C, in: 4, out: 4)
+V(D, in: 4, out: 4)
+V(E, in: 3, out: 3)
+V(F, in: 2, out: 2)
+------------------------------
+Edges:
+E(A,B,6)
+E(A,C,3)
+E(B,A,6)
+E(B,C,2)
+E(B,D,5)
+E(C,A,3)
+E(C,B,2)
+E(C,D,3)
+E(C,E,4)
+E(D,B,5)
+E(D,C,3)
+E(D,E,2)
+E(D,F,3)
+E(E,C,4)
+E(E,D,2)
+E(E,F,5)
+E(F,D,3)
+E(F,E,5)
+==================================================
+
+Minimum Spanning Tree:
+==================================================
+Vertices:
+V(A, in: 1, out: 1)
+V(B, in: 1, out: 1)
+V(C, in: 3, out: 3)
+V(D, in: 3, out: 3)
+V(E, in: 1, out: 1)
+V(F, in: 1, out: 1)
+------------------------------
+Edges:
+E(A,C,3)
+E(B,C,2)
+E(C,B,2)
+E(C,A,3)
+E(C,D,3)
+E(D,E,2)
+E(D,C,3)
+E(D,F,3)
+E(E,D,2)
+E(F,D,3)
+==================================================

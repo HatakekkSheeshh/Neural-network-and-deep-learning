@@ -115,22 +115,22 @@ public:
         //TODO
         VertexNode* ver_from = getVertexNode(from);
         VertexNode* ver_to = getVertexNode(to);
-        if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException("Not found");
+        if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException("Vertex not found");
         Edge* edge = ver_from->getEdge(ver_to);
-        if(edge == nullptr) throw EdgeNotFoundException("Not found");
+        if(edge == nullptr) throw EdgeNotFoundException("Edge not found");
         return edge->weight;
     }
     virtual DLinkedList<T> getOutwardEdges(T from){
         //TODO
         VertexNode *vertex_from = getVertexNode(from);
-        if(vertex_from == nullptr) throw VertexNotFoundException("Not found");
+        if(vertex_from == nullptr) throw VertexNotFoundException("Vertex not found");
         return vertex_from->getOutwardEdges();
     }
     
     virtual DLinkedList<T> getInwardEdges(T to){
         //TODO
         VertexNode *vertex_in = getVertexNode(to);
-        if(vertex_in == nullptr) throw VertexNotFoundException("Not found");
+        if(vertex_in == nullptr) throw VertexNotFoundException("Vertex not found");
         DLinkedList<T> adj_edges;
         typename DLinkedList<VertexNode*>::Iterator it = nodeList.begin();
         while(it != nodeList.end()){
@@ -170,13 +170,13 @@ public:
     virtual int inDegree(T vertex){
         //TODO
         VertexNode *ver_node = getVertexNode(vertex);
-        if(ver_node == nullptr) throw VertexNotFoundException("Not found");
+        if(ver_node == nullptr) throw VertexNotFoundException("Vertex not found");
         return ver_node->inDegree();
     }
     virtual int outDegree(T vertex){
         //TODO
         VertexNode *ver_node = getVertexNode(vertex);
-        if(ver_node == nullptr) throw VertexNotFoundException("Not found");
+        if(ver_node == nullptr) throw VertexNotFoundException("Vertex not found");
         return ver_node->outDegree();
     }
     
@@ -195,7 +195,7 @@ public:
         //TODO
         VertexNode *vertex_from = getVertexNode(from);
         VertexNode *vertex_to = getVertexNode(to);
-        if(vertex_from == nullptr ||  vertex_to == nullptr) throw VertexNotFoundException("Not found");
+        if(vertex_from == nullptr ||  vertex_to == nullptr) throw VertexNotFoundException("Vertex not found");
         if(vertex_from->getEdge(vertex_to)) return true;
         return false;
     }
@@ -262,6 +262,8 @@ public:
     private:
         template<class U>
         friend class DGraphModel;
+        template<class U>
+        friend class UGraphModel;
         
         T vertex;
         int inDegree_, outDegree_;
@@ -321,6 +323,7 @@ public:
             adList.add(edge);
             
             // Update degree
+            
             this->outDegree_++;
             toNode->inDegree_++;
         }
@@ -341,7 +344,7 @@ public:
             //TODO
             typename DLinkedList<Edge*>::Iterator it = adList.begin();
             while(it != adList.end()){
-                if((*it)->to == to){
+                if(vertexEQ((*it)->to->vertex, to->vertex)){
                     return *it;
                 }
                 it++;
