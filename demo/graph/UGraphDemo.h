@@ -18,7 +18,6 @@
 #include <iostream>
 #include <iomanip>
 #include "graph/UGraphModel.h"
-#include "UGraphAlgorithm.h"
 using namespace std;
 
 

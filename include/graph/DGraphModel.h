@@ -17,9 +17,9 @@
 #include "graph/IGraph.h"
 #include "graph/DGraphAlgorithm.h"
 #include "graph/Toposort.h"
+#include "hash/XMap.h"
 //#include "stacknqueue/Queue.h"
 //#include "stacknqueue/Stack.h"
-#include "hash/XMap.h"
 //#include "stacknqueue/PriorityQueue.h"
 //#include "sorting/DLinkedListSE.h"
 
@@ -42,20 +42,45 @@ public:
         //TODO
         typename AbstractGraph<T>::VertexNode* ver_from = this->getVertexNode(from);
         typename AbstractGraph<T>::VertexNode* ver_to = this->getVertexNode(to);
-        if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException("Not found");
+        if(ver_from == nullptr){
+            //ver_from = new AbstractGraph<T>::VertexNode(from,this->vertexEQ, this->vertex2str);
+            this->add(from);
+            ver_from = this->getVertexNode(from);
+            if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException(ver_from->toString());
+        }
+        else if(ver_to == nullptr){
+            this->add(to);
+            ver_from = this->getVertexNode(to);
+            if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException(ver_from->toString());            
+        }    
         ver_from->connect(to,weight);
     }
     void disconnect(T from, T to){
         //TODO
         typename AbstractGraph<T>::VertexNode* ver_from = this->getVertexNode(from);
-        typename AbstractGraph<T>::VertexNode* ver_to = this->getVertexNode(to);
-        if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException("Not found");
+        typename AbstractGraph<T>::VertexNode* ver_to = this->getVertexNode(to);  
+        if(ver_from == nullptr){
+            //ver_from = new AbstractGraph<T>::VertexNode(from,this->vertexEQ, this->vertex2str);
+            this->add(from);
+            ver_from = this->getVertexNode(from);
+            if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException(ver_from->toString());
+        }
+        else if(ver_to == nullptr){
+            this->add(to);
+            ver_from = this->getVertexNode(to);
+            if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException(ver_from->toString());            
+        }     
+        typename AbstractGraph<T>::Edge* edge = ver_from->getEdge(ver_to); 
+        if(edge == nullptr){
+            edge = new typename AbstractGraph<T>::Edge(ver_from,ver_to,0);
+            throw EdgeNotFoundException(edge->toString());        
+        }
         ver_from->removeTo(ver_to);
     }
     void remove(T vertex){
         //TODO
         typename AbstractGraph<T>::VertexNode* node = this->getVertexNode(vertex);
-        if(node == nullptr) throw VertexNotFoundException("Not found");
+        if(node == nullptr) throw VertexNotFoundException("Vertex not found");
         typename DLinkedList<typename AbstractGraph<T>::VertexNode*>::Iterator it = this->nodeList.begin();
         while (it != this->nodeList.end()) {
             (*it)->removeTo(node);
@@ -77,12 +102,12 @@ public:
             string (*vertex2str)(T&)){
         //TODO
         DGraphModel<T>* graph = new DGraphModel<T>(vertexEQ, vertex2str);
-        // add vertex
+        // add vertices
         for(int i = 0; i < nvertices; i++){
             graph->add(vertices[i]);
         }
-        // add edge
-        for(int i = 0; i < nvertices; i++){
+        // add edges
+        for(int i = 0; i < nedges; i++){
             graph->connect(edges[i].from,edges[i].to,edges[i].weight);
         }
         return graph;

@@ -4,6 +4,11 @@
 #include <vector>
 #include <algorithm>
 #include "graph/UGraphModel.h"
+#include "list/DLinkedList.h"
+
+// Correct forward declaration of DGraphModel as a template class
+template <class T>
+class UGraphModel;
 
 template <typename T>
 class UGraphAlgorithm {
@@ -48,13 +53,14 @@ private:
         }
     };
 
-    // Edge structure to help with sorting
+    // Modify Edge to be a template class
+    template <typename U>
     struct Edge {
-        T src;
-        T dest;
+        U src;
+        U dest;
         double weight;
 
-        Edge(const T& s, const T& d, double w) : src(s), dest(d), weight(w) {}
+        Edge(const U& s, const U& d, double w) : src(s), dest(d), weight(w) {}
 
         bool operator<(const Edge& other) const {
             return weight < other.weight;
@@ -62,23 +68,50 @@ private:
     };
 
 public:
-    UGraphModel<T> minSpanningTree(UGraphModel<T>* graph) {
-        // Create a new graph for the MST
-        UGraphModel<T> mst(graph->getEqualFunc(), graph->getVertex2StrFunc());
+    static std::vector<T> getVertices(UGraphModel<T>* graph) {
+        std::vector<T> vertexList;
+        
+        DLinkedList<T> vertices = graph->vertices();
+        
+        for (auto it = vertices.begin(); it != vertices.end(); ++it) {
+            vertexList.push_back(*it);
+        }
+        
+        return vertexList;
+    }
 
-        // Get all vertices and add them to the MST
-        std::vector<T> vertices = graph->getVertices();
+    static std::vector<T> getNeighbors(UGraphModel<T>* graph, T vertex) {
+        std::vector<T> neighbors;
+        
+        DLinkedList<T> neighborList = graph->getOutwardEdges(vertex);
+        
+        for (auto it = neighborList.begin(); it != neighborList.end(); ++it) {
+            neighbors.push_back(*it);
+        }
+        
+        return neighbors;
+    }
+    static double getWeight(UGraphModel<T>* graph, T from, T to) {
+        return graph->weight(from, to);
+    }
+
+    static UGraphModel<T> minSpanningTree(UGraphModel<T>* graph) {
+        // Create a new graph for the Minimum Spanning Tree
+        UGraphModel<T> mst(graph->getVertexEQ(), graph->getVertex2Str());
+
+        // Add all vertices to the MST
+        std::vector<T> vertices = getVertices(graph);
         for (const T& vertex : vertices) {
             mst.add(vertex);
         }
 
-        // Collect all edges
-        std::vector<Edge> edges;
+        // Collect all edges from the original graph
+        std::vector<Edge<T>> edges;
         for (const T& src : vertices) {
-            std::vector<T> neighbors = graph->getNeighbors(src);
+            std::vector<T> neighbors = getNeighbors(graph, src);
             for (const T& dest : neighbors) {
-                double weight = graph->getWeight(src, dest);
-                // Only add each edge once to avoid duplicates
+                // Get the weight of the edge
+                double weight = getWeight(graph, src, dest);
                 if (src < dest) {
                     edges.emplace_back(src, dest, weight);
                 }
@@ -88,21 +121,19 @@ public:
         // Sort edges by weight
         std::sort(edges.begin(), edges.end());
 
-        // Disjoint set for cycle detection
+        // Implement Kruskal's algorithm
         DisjointSet ds;
         for (const T& vertex : vertices) {
             ds.makeSet(vertex);
         }
 
-        // Kruskal's algorithm
-        for (const Edge& edge : edges) {
-            T root1 = ds.find(edge.src);
-            T root2 = ds.find(edge.dest);
+        for (const auto& edge : edges) {
+            T rootSrc = ds.find(edge.src);
+            T rootDest = ds.find(edge.dest);
 
-            // If including this edge doesn't create a cycle
-            if (root1 != root2) {
+            if (rootSrc != rootDest) {
                 mst.connect(edge.src, edge.dest, edge.weight);
-                ds.unionSets(edge.src, edge.dest);
+                ds.unionSets(rootSrc, rootDest);
             }
         }
 

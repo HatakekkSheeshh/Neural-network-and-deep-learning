@@ -11,6 +11,7 @@ namespace fs = std::filesystem;
 #include "include/dsaheader.h"
 #include "include/graph/IGraph.h"
 #include "demo/graph/DGraphDemo.h"
+#include "demo/graph/UGraphDemo.h"
 /* #include "sformat/fmt_lib.h"
 #include "tensor/xtensor_lib.h"
 #include "ann/annheader.h"
@@ -33,14 +34,25 @@ int main(int argc, char** argv) {
     //Classification:
     //twoclasses_classification();
     //threeclasses_classification();
-    cout << "DGraphDemo1:"<<endl;
+//////////////////////////////////////////////////////////////////////
+///////////// GraphModel: Directed Graph Model    ////////////////////
+//////////////////////////////////////////////////////////////////////
+    cout << "DGraphDemo1:" << endl;
     DGraphDemo1();
-    cout << "DGraphDemo2:"<<endl;
+    cout << "DGraphDemo2:" << endl;
     DGraphDemo2();
-    cout << "DGraphDemo3:"<<endl;
+    cout << "DGraphDemo3:" << endl;
     DGraphDemo3();
-    cout << "DijkstraDemo"<<endl;
+    cout << "DijkstraDemo:" << endl;
     dijkstraDemo();
- 
+//////////////////////////////////////////////////////////////////////
+///////////// GraphModel: Undirected Graph Model    ////////////////////
+//////////////////////////////////////////////////////////////////////
+    cout << "UGraphDemo1" << endl;
+    ugraphDemo1();
+    cout << "UGraphDemo2" << endl;
+    ugraphDemo2();
+    cout << "UGraphDemo3" << endl;
+    ugraphDemo3();
     return 0;
 }
