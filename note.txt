@@ -1,0 +1,169 @@
+ClassMetrics
+
+IModel
+
+MLPClassifier
+
+
+
+xt::xarray<double> FCLayer::forward(xt::xarray<double> X) {
+    // Kiểm tra input shape
+    if (X.shape().size() != 2) {
+        throw std::runtime_error("Input must be a 2D tensor (batch_size x input_dim)");
+    }
+    
+    // Kiểm tra input dimension
+    if (X.shape()[1] != m_nNin) {
+        throw std::runtime_error("Input dimension does not match layer's input size");
+    }
+
+    // Lưu trữ input
+    m_aCached_X = X; 
+
+    // Thực hiện phép nhân ma trận
+    xt::xarray<double> output = xt::linalg::dot(X, m_aWeights); 
+
+    // Thêm bias nếu được sử dụng
+    if(m_bUse_Bias){
+        output += m_aBias;
+    }
+
+    return output;
+}
+
+xt::xarray<double> FCLayer::backward(xt::xarray<double> DY) {
+    // Kiểm tra gradient shape
+    if (DY.shape().size() != 2) {
+        throw std::runtime_error("Gradient must be a 2D tensor (batch_size x output_dim)");
+    }
+
+    // Tính gradient cho weights
+    m_aGrad_W = xt::linalg::dot(xt::transpose(m_aCached_X), DY);
+    
+    // Tính gradient cho bias (nếu sử dụng)
+    if (m_bUse_Bias) {
+        m_aGrad_b = xt::sum(DY, {0});
+    }
+    
+    // Tính gradient cho input
+    xt::xarray<double> DX = xt::linalg::dot(DY, xt::transpose(m_aWeights));
+    
+    m_unSample_Counter++;
+    return DX;
+}
+
+
+
+
+
+    m_aGrad_W = xt::linalg::dot(xt::transpose(m_aCached_X), DY);
+
+    std::cout << "DY shape: " << xt::adapt(DY.shape()) << std::endl;
+    std::cout << "m_aGrad_b shape: " << xt::adapt(m_aGrad_b.shape()) << std::endl;
+    std::cout << "Start test 0: " << endl;
+    // Calculate gradient for bias if used
+    if (m_bUse_Bias) {
+        m_aGrad_b = xt::mean(DY, {0});
+        std::cout << "done..." << endl;
+        m_unSample_Counter = DY.shape()[0];
+        std::cout << "next..." << endl;
+    }
+    
+    // Calculate gradient for input
+    xt::xarray<double> DX = xt::linalg::dot(xt::transpose(m_aWeights), DY);
+    std::cout << xt::adapt(DX.shape()) << endl;
+    // Calculate gradient for bias if used
+/*     if (m_bUse_Bias) {
+        m_aGrad_b = xt::mean(DY, {0});
+        std::cout << "done..." << endl;
+        m_unSample_Counter = DY.shape()[0];
+        std::cout << "next..." << endl;
+    } */
+    m_aGrad_b = xt::mean(DY, {0});
+    std::cout << "done..." << endl;
+    m_unSample_Counter = DY.shape()[0];
+    std::cout << "next..." << endl;
+    std::cout << "Done test 0";
+
+    m_unSample_Counter++;
+    std::cout << "Input gradient shape: " << xt::adapt(DX.shape());
+    std::cout << "...End layer backward..." << std::endl;
+    return DX;
+
+
+-----------------------------------------------------------------
+  cout << "m_aCached_Y shape: " << xt::adapt(m_aCached_Y.shape()) << endl;
+  xt::xarray<double> diag_y = diag_stack(m_aCached_Y);
+  cout << "diag_y shape: " << xt::adapt(diag_y.shape()) << endl;
+  xt::xarray<double> outer_y = xt::broadcast(
+    xt::linalg::outer(m_aCached_Y, xt::transpose(m_aCached_Y)), 
+    diag_y.shape()
+);
+  cout << "outer_y shape: " << xt::adapt(outer_y.shape()) << endl;
+  xt::xarray<double> sub = diag_y - outer_y;
+  cout << "sub shape: " << xt::adapt(sub.shape()) << endl;
+  xt::xarray<double> DZ = matmul_on_stack(sub, DY);
+  cout << "DZ shape: " << xt::adapt(DZ.shape()) << endl;
+  return DZ;
+-------------------------------------------------------------------
+    // Thêm kiểm tra shape 
+    m_aYtarget = t; // Y = [y₁ᵀ, y₂ᵀ, ..., yₙᵀ]
+    m_aCached_Ypred = Y; // [t₁ᵀ, t₂ᵀ, ..., tₙᵀ] 
+    if(t.shape()[1] == 1) {
+        // Hard-label case
+        xt::xarray<double> matrix = xt::zeros<double>({t.shape()[0], X.shape()[1]});
+        for(size_t i = 0; i < t.shape()[0]; i++) {
+            matrix(i, static_cast<size_t>(t(i,0))) = 1.0;
+        }
+        
+        if(m_eReduction == REDUCE_NONE) {
+            // return loss for each sample
+            return -xt::sum(matrix * xt::log(m_aCached_Ypred + 1e-7), {1})();
+        }
+        else {
+            // REDUCE_MEAN or REDUCE_SUM
+            int Nnorm = (m_eReduction == REDUCE_MEAN) ? t.shape()[0] : 1;
+            return -xt::sum(matrix * xt::log(m_aCached_Ypred + 1e-7))() / Nnorm;
+        }
+    }
+    else {
+        // One-hot encoded case
+        if(m_eReduction == REDUCE_NONE) {
+            // return loss for each sample
+            return -xt::sum(m_aYtarget * xt::log(m_aCached_Ypred + 1e-7), {1})();
+        }
+        else {
+            // REDUCE_MEAN or REDUCE_SUM
+            int Nnorm = (m_eReduction == REDUCE_MEAN) ? t.shape()[0] : 1;
+            return -xt::sum(m_aYtarget * xt::log(m_aCached_Ypred + 1e-7))() / Nnorm;
+        }
+    }
+
+
+        xt::xarray<double> t;
+    
+    // Convert target to one-hot if it's in hard-label format
+    if (m_aYtarget.shape()[1] == 1) {
+        // Hard-label case - convert to one-hot
+        t = xt::zeros<double>({m_aYtarget.shape()[0], m_aCached_Ypred.shape()[1]});
+        for (size_t i = 0; i < m_aYtarget.shape()[0]; i++) {
+            t(i, static_cast<size_t>(m_aYtarget(i, 0))) = 1.0;
+        }
+    } 
+    else {
+        // Already in one-hot format
+        t = m_aYtarget;
+    }
+    
+    // Calculate normalization factor
+    double Nnorm = (m_eReduction == REDUCE_MEAN) ? static_cast<double>(t.shape()[0]) : 1.0;
+    
+    // Calculate gradient according to equation (28)
+    // Δy = -1/Nnorm * (t / (y + EPSILON))
+    xt::xarray<double> DY = -1.0/Nnorm * (t / (m_aCached_Ypred + 1e-7));
+    
+    // For REDUCE_NONE, we need to multiply by Nnorm since we want per-sample gradients
+    if (m_eReduction == REDUCE_NONE) {
+        DY = DY * Nnorm;
+    }
+    return DY;

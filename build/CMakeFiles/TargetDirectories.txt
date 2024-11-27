@@ -1,0 +1,3 @@
+C:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/build/CMakeFiles/INSTALL.dir
+C:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/build/CMakeFiles/ALL_BUILD.dir
+C:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/build/CMakeFiles/ZERO_CHECK.dir

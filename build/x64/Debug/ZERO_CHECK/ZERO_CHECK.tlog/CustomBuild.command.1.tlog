@@ -1,0 +1,10 @@
+^C:\TAILIEU\DSA\BTL2\ASSIGNMENT2(SAMPLE)\ASSIGNMENT2\CODE\BUILD\CMAKEFILES\288B7A385B87DD2DAE106A35135BD606\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/include/tensor/xflens/cxxlapack -BC:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Tailieu/DSA/BTL2/assignment2(sample)/Assignment2/Code/build/Project.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
