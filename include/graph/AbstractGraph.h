@@ -101,103 +101,42 @@ public:
      */
     virtual void add(T vertex) {
         //TODO
-        if(contains(vertex)) return;
-        VertexNode* newNode = new VertexNode(vertex, this, vertexEQ, vertex2str);
-        this->nodeList.add(newNode);
     }
     virtual bool contains(T vertex){
         //TODO
-        VertexNode* contains = getVertexNode(vertex);
-        if(contains != nullptr) return true;
-        return false;
     }
     virtual float weight(T from, T to){
         //TODO
-        VertexNode* ver_from = getVertexNode(from);
-        VertexNode* ver_to = getVertexNode(to);
-        if(ver_from == nullptr || ver_to == nullptr) throw VertexNotFoundException("Vertex not found");
-        Edge* edge = ver_from->getEdge(ver_to);
-        if(edge == nullptr) throw EdgeNotFoundException("Edge not found");
-        return edge->weight;
     }
     virtual DLinkedList<T> getOutwardEdges(T from){
         //TODO
-        VertexNode *vertex_from = getVertexNode(from);
-        if(vertex_from == nullptr) throw VertexNotFoundException("Vertex not found");
-        return vertex_from->getOutwardEdges();
     }
     
     virtual DLinkedList<T> getInwardEdges(T to){
         //TODO
-        VertexNode *vertex_in = getVertexNode(to);
-        if(vertex_in == nullptr) throw VertexNotFoundException("Vertex not found");
-        DLinkedList<T> adj_edges;
-        typename DLinkedList<VertexNode*>::Iterator it = nodeList.begin();
-        while(it != nodeList.end()){
-            VertexNode *adj = *it;
-            if(adj->getEdge(vertex_in)){
-                adj_edges.add(adj->vertex);
-            }
-            it++;
-        }
-        return adj_edges;
     }
     
     virtual int size() {
         //TODO
-        typename DLinkedList<VertexNode*>::Iterator it = nodeList.begin();
-        int cnt = 0;
-        while(it != nodeList.end()){
-            cnt++;
-            it++;
-        }
-        return cnt;
     }
     virtual bool empty(){
         //TODO
-        if(nodeList.empty()) return true;
-        return false;
     };
     virtual void clear(){
         //TODO
-        typename DLinkedList<VertexNode*>::Iterator it = nodeList.begin();
-        while(it != nodeList.end()){
-            delete *it;
-            it++;
-        }
-        nodeList.clear();
     }
     virtual int inDegree(T vertex){
         //TODO
-        VertexNode *ver_node = getVertexNode(vertex);
-        if(ver_node == nullptr) throw VertexNotFoundException("Vertex not found");
-        return ver_node->inDegree();
     }
     virtual int outDegree(T vertex){
         //TODO
-        VertexNode *ver_node = getVertexNode(vertex);
-        if(ver_node == nullptr) throw VertexNotFoundException("Vertex not found");
-        return ver_node->outDegree();
     }
     
     virtual DLinkedList<T> vertices(){
         //TODO
-        DLinkedList<T> vertexList;
-        typename DLinkedList<VertexNode*>::Iterator it = nodeList.begin();
-        while(it != nodeList.end()){
-            VertexNode* v_keep = *it;
-            vertexList.add(v_keep->getVertex());
-            it++;
-        }
-        return vertexList;
     }
     virtual bool connected(T from, T to){
         //TODO
-        VertexNode *vertex_from = getVertexNode(from);
-        VertexNode *vertex_to = getVertexNode(to);
-        if(vertex_from == nullptr ||  vertex_to == nullptr) throw VertexNotFoundException("Vertex not found");
-        if(vertex_from->getEdge(vertex_to)) return true;
-        return false;
     }
     void println(){
         cout << this->toString() << endl;
@@ -260,11 +199,14 @@ public:
 //BEGIN of VertexNode    
     class VertexNode{
     private:
+
+// create friend class to use private in VertexNode
         template<class U>
         friend class DGraphModel;
         template<class U>
         friend class UGraphModel;
-        
+///////////////////////////////////////////////////
+
         T vertex;
         int inDegree_, outDegree_;
         DLinkedList<Edge*> adList; 
@@ -283,7 +225,7 @@ public:
                    string (*vertex2str)(T&))
             : adList(&DLinkedList<Edge*>::free, &Edge::edgeEQ) {
             this->vertex = vertex;
-            this->graph = graph;
+            this->graph = graph;    // add new 
             this->vertexEQ = vertexEQ;
             this->vertex2str = vertex2str;
             this->outDegree_ = this->inDegree_ = 0;
@@ -293,93 +235,28 @@ public:
         }
         void connect(T to, float weight=0){
             // Find vertex corresponding to 'to'
-            VertexNode* toNode = nullptr;
-            
-            // Use the graph's nodeList to find the matching vertex
-            typename DLinkedList<VertexNode*>::Iterator it = graph->nodeList.begin();
-            while(it != graph->nodeList.end()){
-                if(graph->vertexEQ((*it)->vertex, to)){
-                    toNode = *it;
-                    break;
-                }
-                it++;
-            }
-            
-            // If matching vertex not found, return
-            if(toNode == nullptr) return;
-
-            // Check if edge already exists
-            typename DLinkedList<Edge*>::Iterator edgeIt = adList.begin();
-            while(edgeIt != adList.end()){
-                if(graph->vertexEQ((*edgeIt)->to->vertex, to)){
-                    (*edgeIt)->weight = weight;
-                    return; 
-                }
-                edgeIt++;
-            }
-            
-            // Create new edge if it doesn't exist
-            Edge* edge = new Edge(this, toNode, weight);
-            adList.add(edge);
-            
-            // Update degree
-            
-            this->outDegree_++;
-            toNode->inDegree_++;
+            //TODO
         }
         DLinkedList<T> getOutwardEdges(){
             //TODO
-            // adList:
-            DLinkedList<T> adj_edge;
-            typename DLinkedList<Edge*>::Iterator it = adList.begin();
-            while(it != adList.end()){
-                Edge* edge = *it;
-                adj_edge.add(edge->to->getVertex());
-                it++;
-            }
-            return adj_edge;
         }
 
         Edge* getEdge(VertexNode* to){
             //TODO
-            typename DLinkedList<Edge*>::Iterator it = adList.begin();
-            while(it != adList.end()){
-                if(vertexEQ((*it)->to->vertex, to->vertex)){
-                    return *it;
-                }
-                it++;
-            }
-            return nullptr;
         }
         bool equals(VertexNode* node){
             //TODO
-            if(vertexEQ(this->getVertex() == node)){
-                return true;
-            }
-            return false;
         }
         
         void removeTo(VertexNode* to){
             //TODO
-            typename DLinkedList<Edge*>::Iterator it = adList.begin();
-            while(it != adList.end()){
-                if((*it)->to == to){
-                    Edge* del = *it;
-                    adList.removeItem(del, Edge::free);
-                    this->outDegree_--;
-                    to->inDegree_--;
-                    return;
-                }
-                it++;
             }
         }
         int inDegree(){
             //TODO
-            return inDegree_;
         }
         int outDegree(){
             //TODO
-            return outDegree_;
         }
         string toString(){
             stringstream os;
@@ -416,10 +293,6 @@ public:
         bool equals(Edge* edge){
             //TODO
             // Compare the vertices and weight of the edges
-            if (this->from->vertex == edge->from->vertex && this->to->vertex == edge->to->vertex && this->weight == edge->weight) {
-                return true;
-            }
-            return false;
         }
 
         static bool edgeEQ(Edge*& edge1, Edge*& edge2){
